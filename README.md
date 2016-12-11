@@ -1,4 +1,5 @@
 # GHLUBL
 GitHub Lookup Users By Location
 
-⚠️ Rate API Limit Problem
+Example:
+<pre><code>GHLUBL.py -c "Hong Kong" -o output.csv</code></pre>

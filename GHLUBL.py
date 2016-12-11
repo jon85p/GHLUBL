@@ -5,6 +5,8 @@ import sys
 import optparse
 import os
 import csv
+import getpass
+from time import sleep
 
 
 def find_between(s, first, last, starting=0):
@@ -51,7 +53,7 @@ def find_users(htmls):
 def main():
     parser = optparse.OptionParser(sys.argv[0] + ' -c city -o output')
     parser.add_option('-c', dest='coption', type='string',
-                      help='City for search')
+                      help='City for search (multiple with "")')
     parser.add_option('-o', dest='ooption', type='string',
                       help='Output file in .csv format')
     (options, args) = parser.parse_args()
@@ -93,10 +95,19 @@ def main():
         exit(0)
     print('Looking info for each user...')
     dict_list = []
+    # Use auth user for API limit
+    user_auth = input('>>GitHub user: ')
+    pwd_auth = getpass.getpass('>>Password: ')
     for cont, user in enumerate(users):
-        r = requests.get('https://api.github.com/users/' + user)
+        r = requests.get('https://api.github.com/users/' + user,
+                         auth=(user_auth, pwd_auth))
+        if 'Bad credentials' in r.text:
+            print('Bad credentials, exiting...')
+            exit(0)
         dicc = r.json()
         print(str(cont + 1), '/', str(len(users)), sep='')
+        # Limit API
+        sleep(1)
         dict_list.append(dicc)
     print('Saving csv file', output_filename)
     try:
